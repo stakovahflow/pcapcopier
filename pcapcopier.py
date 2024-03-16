@@ -281,15 +281,15 @@ if __name__ == "__main__":
     else:
         log_file = '/var/log/eyefilecopy.log'
 
-    if args.csv:
-        csvfilename = args.csv
-    else:
-        csvfilename = f"eyefilecopy-{timestamp}-{location}.csv"
-    
     if args.location:
         location = args.location
     else:
         location = input('Location: ').strip()
+    
+    if args.csv:
+        csvfilename = args.csv
+    else:
+        csvfilename = f"eyefilecopy-{timestamp}-{location}.csv"
 
     if args.host:
         remote_host = args.host
