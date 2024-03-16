@@ -82,7 +82,7 @@ def get_file_checksum(file_path):
     logging.debug(f"MD5 Checksum for {file_path}: {md5.hexdigest()}")
     return md5.hexdigest()
 
-def copy_pcap_files(ssh, source_path, destination_path, max_attempts=3, verbose=True, csv_file=csvfilename):
+def copy_pcap_files(ssh, source_path, destination_path, max_attempts=3, verbose=True, csv_file=csv_file):
     logging.debug(f"Copy PCAP files function received: {source_path}, {destination_path}, {max_attempts}, {verbose}, {csv_file}")
     logging.debug(f"Attempting to validate existence of PCAP files in: {source_path}")
     pcap_files_command = f"ls {source_path}/*.pcap"
@@ -287,9 +287,9 @@ if __name__ == "__main__":
         location = input('Location: ').strip()
     
     if args.csv:
-        csvfilename = args.csv
+        csv_file = args.csv
     else:
-        csvfilename = f"eyefilecopy-{timestamp}-{location}.csv"
+        csv_file = f"eyefilecopy-{timestamp}-{location}.csv"
 
     if args.host:
         remote_host = args.host
@@ -336,7 +336,7 @@ if __name__ == "__main__":
 
     # getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
     
-    print(f"Exported transfer information to file: {csvfilename}")
+    print(f"Exported transfer information to file: {csv_file}")
     sleep(1)
 
     #######################################################################
