@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 #
 #  eyefilecopy.py
-#  modified: 2024-03-15
+#  modified: 2024-03-16
 #
 
-version = "2024-03-15"
+version = "2024-03-16"
 
 import paramiko
 import os
@@ -21,33 +21,6 @@ import logging
 import argparse
 
 application_name = argv[0]
-
-# Ensure we're running as root user:
-if os.geteuid() != 0:
-    print(f"{application_name} must be run with root (sudo) permissions")
-    exit(1)
-
-# Print a warning:
-print("If performing this operation over SSH, please ensure you're running 'screen' so that the transfer operation can be backgrounded if the session is interrupted.")
-print("About to transfer PCAP files from a remote system, verify after transfer, then delete")
-
-# Set our global parameters:
-get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
-
-# getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')
-location = input('Location: ').strip()
-logfilename = f"eyefilecopy-{timestamp}-{location}.csv"
-remote_host = input("Host (IP):").strip()
-remote_password = getpass('Password (silentdefense): ')
-remote_username = 'silentdefense'
-remote_base_dir = '/opt/nids-docker/states/'
-continuous_capture_dir = 'pcaps/continuous_capture'
-default_remote_base_dir = '/opt/nids-docker/states/nids-main/pcaps/continuous_capture'
-local_base_dir = '/opt/pcaps'
-
-print(f"Logging to file: {logfilename}")
-sleep(1)
 
 # Configure logging
 def setup_logging():
@@ -284,32 +257,82 @@ def collect_remote_pcaps(host, username, password, remote_base_directory, local_
 
 #######################################################################
 # Add some command line arguments for easier use:
-parser = argparse.ArgumentParser(description='Provide Customizations for Forescout eyeInspect PostgreSQL configuration')
-parser.add_argument('-l', '--local', type=str, help='Local PCAP file directory')
-parser.add_argument('-r', '--remote', type=str, help='Remote PCAP file directory')
-parser.add_argument('-s', '--searchdir', type=str, help='Remote PCAP search directory')
-parser.add_argument('-t', '--timeout', type=int, help='Timeout duration')
+parser = argparse.ArgumentParser(conflict_handler="resolve", description='Provide Customizations for Forescout eyeInspect PostgreSQL configuration')
+parser.add_argument('-l', '--location', type=str, help='Location name (remote site)')
+parser.add_argument('-h', '--host', type=str, help='Remote host')
 parser.add_argument('-u', '--user', type=str, help='Remote username')
+parser.add_argument('-L', '--localpath', type=str, help='Local PCAP file directory')
+parser.add_argument('-R', '--remotepath', type=str, help='Remote PCAP file directory')
+parser.add_argument('-S', '--searchpath', type=str, help='Remote PCAP search directory')
+parser.add_argument('-t', '--timeout', type=int, help='Timeout duration')
 parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
 # Consolidate our command line arguments:
 args=parser.parse_args()
-if args.local:
-    print(f'Local path: {local}')
 
-if args.remote:
-    print(f'Remote path: {remote}')
+if args.location:
+    location = args.location
+else:
+    location = input('Location: ').strip()
 
-if args.timeout:
-    print(f'Timeout: {timeout}')
+if args.host:
+    remote_host = args.host
+else:
+    remote_host = input("Host address:").strip()
 
 if args.user:
-    print(f'User: {user}')
+    remote_username = args.user
+else:
+    remote_username = 'silentdefense'
+
+if args.localpath:
+    local_base_dir = args.localpath
+else:
+    local_base_dir = '/opt/pcaps'
+
+if args.remotepath:
+    remote_base_dir = args.remotepath
+    print(f'Remote path: {remote_base_dir}')
+else:
+    remote_base_dir = '/opt/nids-docker/states/'
+
+if args.timeout:
+    timeout = args.timeout
+    print(f'Timeout: {timeout}')
+else:
+    timeout = 10
 
 if args.verbose:
+    verbosity = True
     print(f'Verbose mode on')
 
 if __name__ == "__main__":
+    # Ensure we're running as root user:
+    if os.geteuid() != 0:
+        print(f"{application_name} must be run with root (sudo) permissions")
+        exit(1)
+
+    # Print a warning:
+    print("If performing this operation over SSH, please ensure you're running 'screen' so that the transfer operation can be backgrounded if the session is interrupted.")
+    print("About to transfer PCAP files from a remote system, verify after transfer, then delete")
+
+    # Set our global parameters:
+    get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
+
+    # getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')
+    
+    logfilename = f"eyefilecopy-{timestamp}-{location}.csv"
+    remote_password = getpass(f'Password ({remote_username}): ')
+    
+    continuous_capture_dir = 'pcaps/continuous_capture'
+    default_remote_base_dir = '/opt/nids-docker/states/nids-main/pcaps/continuous_capture'
+    
+
+    print(f"Logging to file: {logfilename}")
+    sleep(1)
+
+    #######################################################################
     try:
         remote_base_pcap_dir = get_remote_path(remote_host, remote_username, remote_password, remote_base_dir)
         full_remote_pcap_dir = f'{remote_base_pcap_dir}/{continuous_capture_dir}'
