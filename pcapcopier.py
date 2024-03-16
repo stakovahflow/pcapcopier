@@ -22,6 +22,10 @@ import argparse
 
 application_name = argv[0]
 
+def strip_special(inputstring):
+    string_underscored = inputstring.replace(' ', '_')
+    return newstring
+
 # Configure logging
 def setup_logging():
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
@@ -283,9 +287,10 @@ if __name__ == "__main__":
         log_file = '/var/log/eyefilecopy.log'
 
     if args.location:
-        location = args.location
+        initial_location = args.location
     else:
-        location = input('Location: ').strip()
+        initial_location = input('Location: ')
+    location = strip_special(initial_location)
     
     if args.csv:
         csv_file = args.csv
