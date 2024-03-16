@@ -28,7 +28,7 @@ def setup_logging():
     user_message_format = '%(message)s'
 
     # File Handler - for log file
-    file_handler = logging.FileHandler('/var/log/eyefilecopy.log')
+    file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(logging.Formatter(log_format))
     file_handler.setLevel(logging.DEBUG)
 
@@ -82,16 +82,16 @@ def get_file_checksum(file_path):
     logging.debug(f"MD5 Checksum for {file_path}: {md5.hexdigest()}")
     return md5.hexdigest()
 
-def copy_pcap_files(ssh, source_path, destination_path, max_attempts=3, verbose=True, csv_log_file=logfilename):
-    logging.debug(f"Copy PCAP files function received: {source_path}, {destination_path}, {max_attempts}, {verbose}, {csv_log_file}")
+def copy_pcap_files(ssh, source_path, destination_path, max_attempts=3, verbose=True, csv_file=csvfilename):
+    logging.debug(f"Copy PCAP files function received: {source_path}, {destination_path}, {max_attempts}, {verbose}, {csv_file}")
     logging.debug(f"Attempting to validate existence of PCAP files in: {source_path}")
     pcap_files_command = f"ls {source_path}/*.pcap"
     pcap_files = run_remote_command(ssh, pcap_files_command)[0].split()
     for pcap_file in pcap_files:
         logging.debug(f'PCAP found: {pcap_file}')
     all_files_transferred = True
-    logging.debug(f'Attempting to create CSV file: {csv_log_file}')
-    with open(csv_log_file, mode='w', newline='') as csvfile:
+    logging.debug(f'Attempting to create CSV file: {csv_file}')
+    with open(csv_file, mode='w', newline='') as csvfile:
         fieldnames = ['Timestamp', 'Remote_Hostname', 'Remote_File', 'Local_File', 'Remote_Checksum', 'Local_Checksum', 'Transfer_Status']
         logging.debug(f'CSV Fields: {fieldnames}')
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -156,7 +156,7 @@ def copy_pcap_files(ssh, source_path, destination_path, max_attempts=3, verbose=
             # Log information to CSV file
             # timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             timestamped = timestamper()
-            logging.debug(f"Writing information to CSV: {csv_log_file}")
+            logging.debug(f"Writing information to CSV: {csv_file}")
             writer.writerow({
                 'Timestamp': timestamped,
                 'Remote_Hostname': remote_hostname,
@@ -258,17 +258,17 @@ def collect_remote_pcaps(host, username, password, remote_base_directory, local_
 # Add some command line arguments for easier use:
 parser = argparse.ArgumentParser(conflict_handler="resolve", description='Provide Customizations for Forescout eyeInspect PostgreSQL configuration')
 parser.add_argument('-l', '--location', type=str, help='Location name (remote site)')
+parser.add_argument('-c', '--csv', type=str, help='Output CSV filename')
 parser.add_argument('-h', '--host', type=str, help='Remote host')
 parser.add_argument('-u', '--user', type=str, help='Remote username')
 parser.add_argument('-L', '--localpath', type=str, help='Local PCAP file directory')
 parser.add_argument('-R', '--remotepath', type=str, help='Remote PCAP file directory')
-parser.add_argument('-S', '--searchpath', type=str, help='Remote PCAP search directory')
 parser.add_argument('-t', '--timeout', type=int, help='Timeout duration')
 parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
-
-
 if __name__ == "__main__":
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')
+    
     # Ensure we're running as root user:
     if os.geteuid() != 0:
         print(f"{application_name} must be run with root (sudo) permissions")
@@ -276,6 +276,15 @@ if __name__ == "__main__":
     
     # Consolidate our command line arguments:
     args=parser.parse_args()
+    if args.log:
+        log_file = args.log
+    else:
+        log_file = '/var/log/eyefilecopy.log'
+
+    if args.csv:
+        csvfilename = args.csv
+    else:
+        csvfilename = f"eyefilecopy-{timestamp}-{location}.csv"
     
     if args.location:
         location = args.location
@@ -291,7 +300,8 @@ if __name__ == "__main__":
         remote_username = args.user
     else:
         remote_username = 'silentdefense'
-
+    remote_password = getpass(f'Password ({remote_username}): ')
+    
     if args.localpath:
         local_base_dir = args.localpath
     else:
@@ -315,8 +325,8 @@ if __name__ == "__main__":
     
     # Call the function to set up logging at the start of your script
     setup_logging()
+    continuous_capture_dir = 'pcaps/continuous_capture'
     
-
     # Print a warning:
     print("If performing this operation over SSH, please ensure you're running 'screen' so that the transfer operation can be backgrounded if the session is interrupted.")
     print("About to transfer PCAP files from a remote system, verify after transfer, then delete")
@@ -325,16 +335,8 @@ if __name__ == "__main__":
     get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
 
     # getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')
     
-    logfilename = f"eyefilecopy-{timestamp}-{location}.csv"
-    remote_password = getpass(f'Password ({remote_username}): ')
-    
-    continuous_capture_dir = 'pcaps/continuous_capture'
-    default_remote_base_dir = '/opt/nids-docker/states/nids-main/pcaps/continuous_capture'
-    
-
-    print(f"Logging to file: {logfilename}")
+    print(f"Exported transfer information to file: {csvfilename}")
     sleep(1)
 
     #######################################################################
