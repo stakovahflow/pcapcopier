@@ -257,7 +257,7 @@ def collect_remote_pcaps(host, username, password, remote_base_directory, local_
 #######################################################################
 # Add some command line arguments for easier use:
 parser = argparse.ArgumentParser(conflict_handler="resolve", description='Provide Customizations for Forescout eyeInspect PostgreSQL configuration')
-parser.add_argument('-l', '--location', type=str, help='Location name (remote site)')
+parser.add_argument('-L', '--location', type=str, help='Location name (remote site)')
 parser.add_argument('-c', '--csv', type=str, help='Output CSV filename')
 parser.add_argument('-h', '--host', type=str, help='Remote host')
 parser.add_argument('-u', '--user', type=str, help='Remote username')
@@ -265,6 +265,7 @@ parser.add_argument('-L', '--localpath', type=str, help='Local PCAP file directo
 parser.add_argument('-R', '--remotepath', type=str, help='Remote PCAP file directory')
 parser.add_argument('-t', '--timeout', type=int, help='Timeout duration')
 parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
+parser.add_argument('--log', type=str, help="Debug log filename")
 
 if __name__ == "__main__":
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')
