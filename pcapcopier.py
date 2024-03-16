@@ -43,8 +43,7 @@ def setup_logging():
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
 
-# Call the function to set up logging at the start of your script
-setup_logging()
+
 
 def timestamper():
     output = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -267,46 +266,49 @@ parser.add_argument('-S', '--searchpath', type=str, help='Remote PCAP search dir
 parser.add_argument('-t', '--timeout', type=int, help='Timeout duration')
 parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
-# Consolidate our command line arguments:
-args=parser.parse_args()
 
-if args.location:
-    location = args.location
-else:
-    location = input('Location: ').strip()
-
-if args.host:
-    remote_host = args.host
-else:
-    remote_host = input("Host address:").strip()
-
-if args.user:
-    remote_username = args.user
-else:
-    remote_username = 'silentdefense'
-
-if args.localpath:
-    local_base_dir = args.localpath
-else:
-    local_base_dir = '/opt/pcaps'
-
-if args.remotepath:
-    remote_base_dir = args.remotepath
-    print(f'Remote path: {remote_base_dir}')
-else:
-    remote_base_dir = '/opt/nids-docker/states/'
-
-if args.timeout:
-    timeout = args.timeout
-    print(f'Timeout: {timeout}')
-else:
-    timeout = 10
-
-if args.verbose:
-    verbosity = True
-    print(f'Verbose mode on')
 
 if __name__ == "__main__":
+        # Consolidate our command line arguments:
+    args=parser.parse_args()
+
+    if args.location:
+        location = args.location
+    else:
+        location = input('Location: ').strip()
+
+    if args.host:
+        remote_host = args.host
+    else:
+        remote_host = input("Host address:").strip()
+
+    if args.user:
+        remote_username = args.user
+    else:
+        remote_username = 'silentdefense'
+
+    if args.localpath:
+        local_base_dir = args.localpath
+    else:
+        local_base_dir = '/opt/pcaps'
+
+    if args.remotepath:
+        remote_base_dir = args.remotepath
+        print(f'Remote path: {remote_base_dir}')
+    else:
+        remote_base_dir = '/opt/nids-docker/states/'
+
+    if args.timeout:
+        timeout = args.timeout
+        print(f'Timeout: {timeout}')
+    else:
+        timeout = 10
+
+    if args.verbose:
+        verbosity = True
+        print(f'Verbose mode on')
+    # Call the function to set up logging at the start of your script
+    setup_logging()
     # Ensure we're running as root user:
     if os.geteuid() != 0:
         print(f"{application_name} must be run with root (sudo) permissions")
