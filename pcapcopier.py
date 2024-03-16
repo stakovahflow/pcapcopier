@@ -269,9 +269,14 @@ parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output
 
 
 if __name__ == "__main__":
-        # Consolidate our command line arguments:
+    # Ensure we're running as root user:
+    if os.geteuid() != 0:
+        print(f"{application_name} must be run with root (sudo) permissions")
+        exit(1)
+    
+    # Consolidate our command line arguments:
     args=parser.parse_args()
-
+    
     if args.location:
         location = args.location
     else:
@@ -307,12 +312,10 @@ if __name__ == "__main__":
     if args.verbose:
         verbosity = True
         print(f'Verbose mode on')
+    
     # Call the function to set up logging at the start of your script
     setup_logging()
-    # Ensure we're running as root user:
-    if os.geteuid() != 0:
-        print(f"{application_name} must be run with root (sudo) permissions")
-        exit(1)
+    
 
     # Print a warning:
     print("If performing this operation over SSH, please ensure you're running 'screen' so that the transfer operation can be backgrounded if the session is interrupted.")
