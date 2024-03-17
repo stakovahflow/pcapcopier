@@ -5,7 +5,7 @@
 #  modified: 2024-03-16
 #
 
-version = "2024-03-16"
+version = "2024-03-16-c"
 
 import paramiko
 import os
@@ -23,7 +23,7 @@ import argparse
 application_name = argv[0]
 
 def strip_special(inputstring):
-    string_underscored = inputstring.replace(' ', '_')
+    newstring = inputstring.replace(' ', '_')
     return newstring
 
 # Configure logging
