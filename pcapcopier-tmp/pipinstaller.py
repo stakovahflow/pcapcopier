@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+version='2024-03-17-e'
 import os
 
 try:
@@ -26,7 +26,6 @@ try:
 except ImportError:
     print('Installing scp')
     os.system(f'pip3 install --no-index --no-deps ./wheels/scp-0.14.5-py2.py3-none-any.whl')
-
 
 try:
     import cffi
