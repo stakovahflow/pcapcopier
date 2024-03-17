@@ -10,6 +10,8 @@ echo -e "Timestamp:  $DATED"
 
 python3 ./pipinstaller.py
 
+chmod a+x pcapcopier.py
+
 cp ./pcapcopier.py /usr/local/sbin/pcapcopier
 
 chmod a+x /usr/local/sbin/pcapcopier
