@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-
-version='2024-03-17-b'
-
+version='2024-03-16-a'
 DATED=$(date +%Y%m%d-%H%M%S)
 
 python3 ./pipinstaller.py
