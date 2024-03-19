@@ -127,6 +127,7 @@ def ssh_session_remote_path(username,host,password):
                 else:
                     sha256sum_command = 'sudo sha256sum %s | awk "{print $1}"' % (subline)
                     ssh.sendline(sha256sum_command)
+                    ssh.prompt()
                     sha256sum_output = ssh.before.decode()
                     print(f"SHA256: {sha256sum_output} {subline}")
         ssh.logout()
