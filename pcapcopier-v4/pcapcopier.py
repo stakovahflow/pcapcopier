@@ -100,26 +100,26 @@ def scp_session(username, host, password, source, destination):
 def ssh_session_remote_path(username,host,password):
     try:
         get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
-        s = pxssh.pxssh()
-        s.login (host, username, password)
-        s.sendline (get_base_remote_path_command)
-        s.prompt()
-        output = s.before.decode()
+        ssh = pxssh.pxssh()
+        ssh.login (host, username, password)
+        ssh.sendline (get_base_remote_path_command)
+        ssh.prompt()
+        output = ssh.before.decode()
         lines = output.splitlines()[1:]
         for line in lines:
             if re.match(r'[a-z]', line):
                 print(f"output: {line}")
                 get_remote_file_list_command = f'find -type f {line}/pcaps/continuous_capture/ -type f -name "*.pcap"'
                 logging.info(f"Attempting to run command: {get_base_remote_path_command}")
-                s.sendline (get_remote_file_list_command)
-                s.prompt()
-                output = s.before.decode()
+                ssh.sendline (get_remote_file_list_command)
+                ssh.prompt()
+                output = ssh.before.decode()
                 logging.debug(output)
                 lines = output.splitlines()[1:]
                 for line in lines:
                     if re.match(r'[a-z]', line):
                         print(f"Remote path: {line}")
-        s.logout()
+        ssh.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
         print(str(e))
