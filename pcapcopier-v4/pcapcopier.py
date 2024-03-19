@@ -110,10 +110,11 @@ def ssh_session_remote_path(username,host,password):
             if re.match(r'[a-z]', line):
                 print(f"output: {line}")
                 get_remote_file_list_command = f'find -type f {line}/pcaps/continuous_capture/ -type f -name "*.pcap"'
-                logging.info(f"Attemptint to run command: {get_base_remote_path_command}")
+                logging.info(f"Attempting to run command: {get_base_remote_path_command}")
                 s.sendline (get_remote_file_list_command)
                 s.prompt()
                 output = s.before.decode()
+                logging.debug(output)
                 lines = output.splitlines()[1:]
                 for line in lines:
                     if re.match(r'[a-z]', line):
