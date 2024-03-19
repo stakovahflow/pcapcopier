@@ -16,7 +16,6 @@ from time import sleep
 application_name = argv[0]
 
 # Set our global parameters:
-get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
 continuous_capture_dir = 'pcaps/continuous_capture'
 remote_base_dir = '/opt/nids-docker/states/'
 log_file = '/var/log/eyefilecopy.log'
@@ -100,6 +99,7 @@ def scp_session(username, host, password, source, destination):
 
 def ssh_session_remote_path(username,host,password):
     try:
+        get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
         s = pxssh.pxssh()
         s.login (host, username, password)
         s.sendline (get_base_remote_path_command)
@@ -235,6 +235,7 @@ if __name__ == "__main__":
 
     #######################################################################
     ssh_session_remote_path(remote_username,remote_host,remote_password)
+    
     # ssh_session(username, host, password, command)
     """
     try:
