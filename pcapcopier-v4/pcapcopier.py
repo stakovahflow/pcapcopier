@@ -136,6 +136,8 @@ def ssh_session_remote_path(username,host,password):
                     sha256sum_lines = sha256sum_output.splitlines()[1:][0]
                     print(f"SHA256: {subline} - {sha256sum_lines}")
                     mvpcap_command = f'sudo mv {subline} {newdir}'
+                    ssh.sendline(mvpcap_command)
+                    ssh.prompt()
         ssh.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
