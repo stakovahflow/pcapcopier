@@ -108,8 +108,9 @@ def ssh_session(username,host,password,command):
         output = s.before.decode()
         lines = output.splitlines()[1:]
         for line in lines:
-            if re.match(r'[a-z]', line):
-                print(f"output: {line}")
+            #if re.match(r'[a-z]', line):
+            #    print(f"output: {line}")
+            print(line)
         s.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
@@ -208,6 +209,7 @@ if __name__ == "__main__":
 
     #######################################################################
     ssh_session(remote_username,remote_host,remote_password,get_base_remote_path_command)
+    # ssh_session(username, host, password, command)
     """
     try:
         remote_base_pcap_dir = get_remote_path(remote_host, remote_username, remote_password, remote_base_dir)
