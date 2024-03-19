@@ -112,15 +112,13 @@ def ssh_session_remote_path(username,host,password):
                 remotepath = line
                 getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
             #print(line)
-        s.sendline (getremotefilelist)
-        s.prompt()
-        output = s.before.decode()
-        lines = output.splitlines()[1:]
-        for line in lines:
-            if re.match(r'[a-z]', line):
-                print(f"Remote path: {line}")
-            #print(line)
-        
+            s.sendline (getremotefilelist)
+            s.prompt()
+            output = s.before.decode()
+            lines = output.splitlines()[1:]
+            for line in lines:
+                if re.match(r'[a-z]', line):
+                    print(f"Remote path: {line}")
         s.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
