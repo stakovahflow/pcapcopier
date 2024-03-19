@@ -119,7 +119,7 @@ def ssh_session_remote_path(username,host,password):
             for subline in sublines:
                 if re.match(r'[a-z]', subline):
                     print(f"Remote path: {subline}")
-                if re.search("No such file or directory"):
+                if re.match("No such file or directory"):
                     print(f"Directory '{subline}' does not exist")
         ssh.logout()
     except pxssh.ExceptionPxssh as e:
