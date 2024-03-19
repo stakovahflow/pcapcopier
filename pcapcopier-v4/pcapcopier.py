@@ -113,9 +113,9 @@ def ssh_session_remote_path(username,host,password):
             logging.info(f"Attempting to run command: {get_base_remote_path_command}")
             ssh.sendline (get_remote_file_list_command)
             ssh.prompt()
-            output = ssh.before.decode()
-            logging.debug(output)
-            sublines = output.splitlines()[1:]
+            suboutput = ssh.before.decode()
+            logging.debug(suboutput)
+            sublines = suboutput.splitlines()[1:]
             for subline in sublines:
                 if re.match(r'[a-z]', subline):
                     print(f"Remote path: {subline}")
