@@ -125,7 +125,7 @@ def ssh_session_remote_path(username,host,password):
                 if re.match("No such file or directory", subline):
                     print(f"Directory '{subline}' does not exist")
                 else:
-                    sha256sum_command = 'sudo sha256sum %s | awk "{print $1}"' % (subline)
+                    sha256sum_command = "sudo sha256sum %s | awk '{print $1}'" % (subline)
                     ssh.sendline(sha256sum_command)
                     ssh.prompt()
                     sha256sum_output = ssh.before.decode()
