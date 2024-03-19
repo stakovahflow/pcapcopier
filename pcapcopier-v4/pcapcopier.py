@@ -120,8 +120,8 @@ def ssh_session_remote_path(username,host,password):
             logging.debug(suboutput)
             sublines = suboutput.splitlines()[1:]
             for subline in sublines:
-                if re.match(r'[a-z]', subline):
-                    print(f"Remote path: {subline}")
+                #if re.match(r'[a-z]', subline):
+                print(f"Remote path: {subline}")
                 if re.match("No such file or directory", subline):
                     print(f"Directory '{subline}' does not exist")
         ssh.logout()
