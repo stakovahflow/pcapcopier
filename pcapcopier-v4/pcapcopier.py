@@ -119,7 +119,8 @@ def ssh_session_remote_path(username,host,password):
             suboutput = ssh.before.decode()
             logging.debug(suboutput)
             sublines = suboutput.splitlines()[1:]
-            mkdir_command = f'sudo mkdir -p /tmp/pcapmigration-{timestamp}'
+            newdir = f'/tmp/pcapmigration-{timestamp}'
+            mkdir_command = f'sudo mkdir -p {newdir}'
             ssh.sendline(mkdir_command)
             ssh.prompt()
             for subline in sublines:
@@ -134,7 +135,7 @@ def ssh_session_remote_path(username,host,password):
                     sha256sum_output = ssh.before.decode()
                     sha256sum_lines = sha256sum_output.splitlines()[1:][0]
                     print(f"SHA256: {subline} - {sha256sum_lines}")
-                    mvpcap_command = 'sudo '
+                    mvpcap_command = f'sudo mv {subline} {newdir}'
         ssh.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
