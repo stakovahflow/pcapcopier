@@ -17,7 +17,6 @@ application_name = argv[0]
 
 # Set our global parameters:
 get_base_remote_path_command = "find /opt/nids-docker/states/ -mindepth 1 -maxdepth 1 -type d"
-# getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
 continuous_capture_dir = 'pcaps/continuous_capture'
 remote_base_dir = '/opt/nids-docker/states/'
 log_file = '/var/log/eyefilecopy.log'
@@ -99,6 +98,35 @@ def scp_session(username, host, password, source, destination):
     except Exception as e:
         logging.error(e)
 
+def ssh_session_remote_path(username,host,password):
+    try:
+        s = pxssh.pxssh()
+        s.login (host, username, password)
+        s.sendline (get_base_remote_path_command)
+        s.prompt()
+        output = s.before.decode()
+        lines = output.splitlines()[1:]
+        for line in lines:
+            if re.match(r'[a-z]', line):
+                print(f"output: {line}")
+                remotepath = line
+                getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
+            #print(line)
+        s.sendline (getremotefilelist)
+        s.prompt()
+        output = s.before.decode()
+        lines = output.splitlines()[1:]
+        for line in lines:
+            if re.match(r'[a-z]', line):
+                print(f"Remote path: {line}")
+            #print(line)
+        
+        s.logout()
+    except pxssh.ExceptionPxssh as e:
+        print("pxssh failed on login.")
+        print(str(e))
+    return()
+
 def ssh_session(username,host,password,command):
     try:
         s = pxssh.pxssh()
@@ -108,13 +136,14 @@ def ssh_session(username,host,password,command):
         output = s.before.decode()
         lines = output.splitlines()[1:]
         for line in lines:
-            #if re.match(r'[a-z]', line):
-            #    print(f"output: {line}")
-            print(line)
+            if re.match(r'[a-z]', line):
+                print(f"output: {line}")
+            #print(line)
         s.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
         print(str(e))
+    return()
 
 def copy_pcap_files(ssh, source_path, destination_path, max_attempts=3, verbose=True):
     logging.debug(f"Copy PCAP files function received: {source_path}, {destination_path}, {max_attempts}, {verbose}, {csv_file}")
