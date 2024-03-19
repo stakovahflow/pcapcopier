@@ -112,7 +112,7 @@ def ssh_session_remote_path(username,host,password):
             get_remote_file_list_command = f'sudo find {line}/pcaps/continuous_capture/ -type f -name "*.pcap"'
             logging.info(f"Attempting to run command: {get_remote_file_list_command}")
             ssh.sendline (get_remote_file_list_command)
-            ssh.expect("assword:")
+            ssh.expect(f"assword for {username}:")
             ssh.send(password)
             ssh.send('\r')
             ssh.prompt()
