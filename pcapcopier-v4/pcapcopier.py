@@ -126,8 +126,9 @@ def ssh_session_remote_path(username,host,password):
                     print(f"Directory '{subline}' does not exist")
                 else:
                     sha256sum_command = 'sudo sha256sum %s | awk "{print $1}"' % (subline)
-                    sha256sum = ssh.sendline(sha256sum_command)
-                    print(f"SHA256: {sha256sum} {subline}")
+                    ssh.sendline(sha256sum_command)
+                    sha256sum_output = ssh.before.decode()
+                    print(f"SHA256: {sha256sum_output} {subline}")
         ssh.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
