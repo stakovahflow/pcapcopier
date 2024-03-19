@@ -129,7 +129,8 @@ def ssh_session_remote_path(username,host,password):
                     ssh.sendline(sha256sum_command)
                     ssh.prompt()
                     sha256sum_output = ssh.before.decode()
-                    print(f"SHA256: {sha256sum_output} {subline}")
+                    sha256sum_lines = sha256sum_output.splitlines()[1:]
+                    print(f"SHA256: {sha256sum_lines} {subline}")
         ssh.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
