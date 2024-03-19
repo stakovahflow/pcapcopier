@@ -47,8 +47,6 @@ def setup_logging():
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
 
-
-
 def timestamper():
     output = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     logging.debug(output)
@@ -61,7 +59,6 @@ def run_remote_command(ssh, command):
     logging.debug(output)
     logging.debug(errors)
     return output, errors
-
 
 def send_sudo_password(ssh, password, command):
     logging.debug(f"Invoking SSH Shell")
