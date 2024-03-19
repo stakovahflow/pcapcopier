@@ -109,16 +109,18 @@ def ssh_session_remote_path(username,host,password):
         for line in lines:
             #if re.match(r'[a-z]', line):
             print(f"output: {line}")
-            get_remote_file_list_command = f'find -type f {line}/pcaps/continuous_capture/ -type f -name "*.pcap"'
+            get_remote_file_list_command = f'find {line}/pcaps/continuous_capture/ -type f -name "*.pcap"'
             logging.info(f"Attempting to run command: {get_base_remote_path_command}")
             ssh.sendline (get_remote_file_list_command)
             ssh.prompt()
             output = ssh.before.decode()
             logging.debug(output)
-            lines = output.splitlines()[1:]
-            for line in lines:
-                if re.match(r'[a-z]', line):
-                    print(f"Remote path: {line}")
+            sublines = output.splitlines()[1:]
+            for subline in sublines:
+                if re.match(r'[a-z]', subline):
+                    print(f"Remote path: {subline}")
+                if re.match('No such file or directory'):
+                    print(f"Directory '{subline}' does not exist")
         ssh.logout()
     except pxssh.ExceptionPxssh as e:
         print("pxssh failed on login.")
