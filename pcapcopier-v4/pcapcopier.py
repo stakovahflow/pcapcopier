@@ -110,10 +110,11 @@ def ssh_session_remote_path(username,host,password):
             #if re.match(r'[a-z]', line):
             print(f"output: {line}")
             get_remote_file_list_command = f'sudo find {line}/pcaps/continuous_capture/ -type f -name "*.pcap"'
-            logging.info(f"Attempting to run command: {get_base_remote_path_command}")
+            logging.info(f"Attempting to run command: {get_remote_file_list_command}")
             ssh.sendline (get_remote_file_list_command)
             ssh.expect("assword:")
-            ssh.send(f"{password}\n")
+            ssh.send(password)
+            ssh.send('\r')
             ssh.prompt()
             suboutput = ssh.before.decode()
             logging.debug(suboutput)
