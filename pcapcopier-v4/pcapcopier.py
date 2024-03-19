@@ -234,7 +234,9 @@ if __name__ == "__main__":
     sleep(0.1)
 
     #######################################################################
+    logging.info("Attempting to perform initial file path reconnaissance:")
     ssh_session_remote_path(remote_username,remote_host,remote_password)
+    logging.info("Completed.")
     
     # ssh_session(username, host, password, command)
     """
