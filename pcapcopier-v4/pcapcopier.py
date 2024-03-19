@@ -109,8 +109,7 @@ def ssh_session_remote_path(username,host,password):
         for line in lines:
             if re.match(r'[a-z]', line):
                 print(f"output: {line}")
-                remotepath = line
-                getremotefilelist = f"find {remotepath}/pcaps/continuous_capture/"
+                getremotefilelist = f"find {line}/pcaps/continuous_capture/"
             #print(line)
             s.sendline (getremotefilelist)
             s.prompt()
@@ -235,7 +234,7 @@ if __name__ == "__main__":
     sleep(0.1)
 
     #######################################################################
-    ssh_session(remote_username,remote_host,remote_password,get_base_remote_path_command)
+    ssh_session_remote_path(remote_username,remote_host,remote_password)
     # ssh_session(username, host, password, command)
     """
     try:
