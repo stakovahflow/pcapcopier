@@ -308,7 +308,7 @@ if __name__ == "__main__":
     if args.localpath:
         local_base_dir = args.localpath
     else:
-        local_base_dir = '/opt/pcaps'
+        local_base_dir = '/opt/nids-docker/custom/pcaps/sniff_offline/'
 
     if args.remotepath:
         remote_base_dir = args.remotepath
