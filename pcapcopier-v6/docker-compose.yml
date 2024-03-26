@@ -1,0 +1,10 @@
+services:
+  pcapcopier:
+    #ports:
+    #  - "2022:2022"
+    volumes:
+      - "/home/silentdefense:/home/silentdefense"
+      - "/opt:/opt"
+    container_name: pcapcopier
+    image: pcapcopier
+    restart: unless-stopped
