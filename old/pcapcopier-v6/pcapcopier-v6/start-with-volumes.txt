@@ -1,1 +1,0 @@
-sudo docker run --volume=/opt/pcaps:/opt/pcaps --volume=/home/silentdefense:/home/silentdefense -it --name pcapcopier -d pcapcopier-v5.1:latest
