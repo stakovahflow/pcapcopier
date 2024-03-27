@@ -13,3 +13,20 @@ docker stop pcapcopier_v1.7
 docker rm pcapcopier_v1.7
 docker image rm pcapcopier_v1.7
 docker image rm alpine
+
+
+makeself pcapcopier-v1.7/ pcapcopier-installer-1.7.run "PCAP copier" ./installer.sh
+Header is 718 lines long
+
+About to compress 133628 KB of data...
+Adding files to archive named "pcapcopier-installer-1.7.run"...
+a ./crontab
+a ./entrypoint.sh
+a ./installer.sh
+a ./pcapcopier-compose.yml
+a ./pcapcopier.py
+a ./pcapcopier_v1.7.tar
+CRC: 3874915358
+MD5: bfeffbfdb42215b3c31f1de2bef287bd
+
+Self-extractable archive "pcapcopier-installer-1.7.run" successfully created.
