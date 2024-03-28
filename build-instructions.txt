@@ -1,6 +1,9 @@
 sudo docker build -t pcapcopier_v1.7 .
+sudo docker build -t pcapcopier_v1.8 .
 docker image save -o pcapcopier-v1.7/pcapcopier_v1.7.tar pcapcopier_v1.7:latest
+docker image save -o pcapcopier_v1.8/pcapcopier_v1.8.tar pcapcopier_v1.8:latest
 docker load -i pcapcopier_v1.7.tar
+docker load -i pcapcopier_v1.8.tar
 docker-compose -f docker-compose.yml up -d
 
 makeself pcapcopier-v1.7/ pcapcopier-installer.run "PCAP copier" ./installer.sh

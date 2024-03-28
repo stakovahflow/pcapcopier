@@ -1,0 +1,16 @@
+version: '3' 
+services:
+  pcapcopier_v1.8:
+    container_name: pcapcopier_v1.8
+    image: pcapcopier_v1.8
+    environment:
+      - MOTD="\\n###########################\\nSilentdefense -- PCAP Copier\\n###########################"
+      - OVERRIDE_SERVER_PROPERTIES="true"
+    hostname: pcapcopier_v1.8
+    ports:
+      - "127.0.0.1:2022:2022"
+    volumes:
+      - "/home/silentdefense:/home/silentdefense"
+      - "/var/log/pcapcopier:/var/log/pcapcopier"
+      - "/opt/nids-docker/custom/pcaps/sniff_offline/:/opt/nids-docker/custom/pcaps/sniff_offline/"
+    restart: unless-stopped
