@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if [[ $EUID -ne 0 ]]; then
+   echo "This application must be run as root (sudo)" 
+   exit 1
+fi
 VERSION="pcapcopier_v1.8"
 USERNAME="silentdefense"
 HOMEDIR="/home/${USERNAME}"

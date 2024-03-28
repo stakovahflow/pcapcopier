@@ -257,7 +257,7 @@ def collect_remote_pcaps(host, username, password, remote_base_directory, local_
 
 #######################################################################
 # Add some command line arguments for easier use:
-parser = argparse.ArgumentParser(conflict_handler="resolve", description='Provide Customizations for Forescout eyeInspect PostgreSQL configuration')
+parser = argparse.ArgumentParser(conflict_handler="resolve", description='Copy PCAPS from eyeInspect Sensor to Command Center')
 parser.add_argument('-l', '--location', type=str, help='Location name (remote site)')
 parser.add_argument('-c', '--csv', type=str, help='Output CSV filename')
 parser.add_argument('-h', '--host', type=str, help='Remote host')
