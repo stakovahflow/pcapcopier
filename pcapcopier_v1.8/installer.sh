@@ -1,27 +1,43 @@
 #!/usr/bin/env bash
+APPVERSION='2024-03-28-a'
+VERSION="pcapcopier_v1.8"
 if [[ $EUID -ne 0 ]]; then
    echo "This application must be run as root (sudo)" 
    exit 1
 fi
-VERSION="pcapcopier_v1.8"
+
+# Global variables:
 USERNAME="silentdefense"
-LOCALPATH="/opt/pcapcopier/localstorage/home"
-LOGPATH="/opt/pcapcopier/log"
-CSVPATH="/opt/pcapcopier/csv"
-CUSTOMHOMEDIR="${LOCALPATH}/${USERNAME}"
-SSHDIR="${HOMEDIR}/.ssh"
-SSHPRIVATEKEY="${SSHDIR}/id_ecdsa"
-SSHPUBLICKEY="${SSHDIR}/id_ecdsa.pub"
-AUTHKEYS="${LOCALPATH}/.ssh/authorized_keys"
-TMPAUTHKEYS="/tmp/authorized_keys_${USERNAME}"
+
+# Container-based persistent variables:
+PERSISTBASE="/opt/pcapcopier"
+PERSISTPATH="${PERSISTBASE}/persistent/"
+PERSISTLOG="${PERSISTBASE}/log"
+PERSISTCSV="${PERSISTBASE}/csv"
+PERSISTHOME="${PERSISTPATH}/home"
+PERSISTHOMEDIR="${PERSISTPATH}/${USERNAME}"
+PERSISTSSHDIR="${PERSISTHOMEDIR}/.ssh"
+PERSISTAUTHKEYS="${PERSISTSSHDIR}/authorized_keys"
+
+# Local variables:
+LOCALHOMEDIR="/home/${USERNAME}"
+LOCALSSHDIR="${HOMEDIR}/.ssh"
+SSHPRIVATEKEY="${LOCALSSHDIR}/id_ecdsa"
+SSHPUBLICKEY="${LOCALSSHDIR}/id_ecdsa.pub"
 SSHCONFIG='Host 127.0.0.1
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null'
-SSHCONFIGPATH="${SSHDIR}/config"
+LOCALSSHCONFIG="${LOCALSSHDIR}/config"
+USERID="1000"
+GROUPID="1000"
 
-mkdir -p "$LOCALPATH"
+# Create persistent directory structures
+mkdir -p "${PERSISTHOMEDIR}"
+mkdir -p "${PERSISTSSHDIR}"
+mkdir -p "${PERSISTLOG}"
+mkdir -p "${PERSISTCSV}"
 
-if [ -d "$HOMEDIR" ]; then
+if [ -d "$LOCALHOMEDIR" ]; then
   echo "$USERNAME home directory found"
 else
   echo "$USERNAME home directory not found."
@@ -33,10 +49,10 @@ fi
 if [ -f "$SSHPRIVATEKEY" ]; then
   echo -e "Found id_ecdsa private key"
 else
-  mkdir -p "$SSHDIR"
-  chmod 700 "$SSHDIR"
-  chown -R "$USERNAME":"$USERNAME" "$SSHDIR"
-  echo -e "An ecdsa key was not found in: $SSHDIR"
+  mkdir -p "$LOCALSSHDIR"
+  chmod 700 "$LOCALSSHDIR"
+  chown -R "$USERNAME":"$USERNAME" "$LOCALSSHDIR"
+  echo -e "An ecdsa key was not found in: $LOCALSSHDIR"
   echo -e "Local $USERNAME password: "
   read -s LOCALPASSWD
   echo -e ""
@@ -50,40 +66,36 @@ else
   fi
 fi
 
-echo -e "Attempting to copy and deduplicate authorized_keys"
-cat "$SSHPUBLICKEY" >> "$AUTHKEYS"
-# cat ${AUTHKEYS} | sort | uniq | grep "[a-z]" > ${TMPAUTHKEYS}; mv ${TMPAUTHKEYS} ${AUTHKEYS}
-chmod 600 "$AUTHKEYS"
-echo "$SSHCONFIG" > "$SSHCONFIGPATH"
-chown -R silentdefense:silentdefense "$SSHDIR"
+echo -e "Creating authorized keys from $SSHPUBLICKEY: "
+cat "$SSHPUBLICKEY" >> "$PERSISTAUTHKEYS"
+chmod 600 "$PERSISTAUTHKEYS"
+echo "$SSHCONFIG" > "$LOCALSSHCONFIG"
+chown -R "$USERNAME:$USERNAME" "$LOCALSSHDIR"
 
 echo -e "Changing permissions on working directory"
-chmod 755 .
+chown -R "$USERNAME:$USERNAME" .
 echo -e "Done."
-
 
 echo -e "Attempting to load pcapcopier docker image:"
 docker load -i "$VERSION.tar"
 echo -e "Done."
 
-#echo -e "Creating /opt/pcapcopier directory:"
-#mkdir -p /opt/pcapcopier
-#echo -e "Done."
-
-echo -e "Copying pcapcopier-compose.yml to /opt/pcapcopier/"
-cp pcapcopier-compose.yml /opt/pcapcopier/
-cp pcapcopier-uninstaller.sh /opt/pcapcopier/
-chmod a+x /opt/pcapcopier/pcapcopier-uninstaller.sh
+echo -e "Copying pcapcopier-compose.yml to $PERSISTBASE"
+cp pcapcopier-compose.yml "$PERSISTBASE/"
+cp pcapcopier-uninstaller.sh "$PERSISTBASE/"
+chmod a+x "$PERSISTBASE/pcapcopier-uninstaller.sh"
 echo -e "Done."
 
-echo -e "Changing psermissions on /opt/pcapcopier"
-chown -R silentdefense:silentdefense /opt/pcapcopier
+echo -e "Changing permissions on $PERSISTLOG"
+chown -R "$USERNAME":"$USERNAME" "$PERSISTBASE"
+chown -R "$USERNAME":"$USERNAME" "$PERSISTCSV"
+chown -R "$USERID":"$GROUPID" "$PERSISTHOMEDIR"
 echo -e "Done."
 
 echo -e "Starting docker container"
 echo -e "To start the PCAP copier container, run the following command:"
-echo -e "    sudo docker-compose -f /opt/pcapcopier/pcapcopier-compose.yml up -d"
-docker-compose -f /opt/pcapcopier/pcapcopier-compose.yml up -d
+echo -e "    sudo docker-compose -f $PERSISTBASE/pcapcopier-compose.yml up -d"
+docker-compose -f $PERSISTBASE/pcapcopier-compose.yml up -d
 echo -e "Done."
 
 echo -e "To log into the PCAP copier, execute the following command:"
@@ -94,9 +106,9 @@ echo -e "#####################################################################
 #####################################################################
 "
 echo -e "To run the pcap copier application, run the following command:
-    sudo /opt/pcapcopier/bin/pcapcopier.py -h 192.168.123.111
-    sudo /opt/pcapcopier/bin/pcapcopier.py --help
-    sudo /opt/pcapcopier/bin/pcapcopier.py
+    sudo $PERSISTBASE/bin/pcapcopier.py -h 192.168.123.111
+    sudo $PERSISTBASE/bin/pcapcopier.py --help
+    sudo $PERSISTBASE/bin/pcapcopier.py
 
 options:
   --help                show this help message and exit
@@ -105,7 +117,7 @@ options:
   -c CSV, --csv CSV     Output CSV filename
   -h HOST, --host HOST  Remote host
   -u USER, --user USER  Remote username
-  -L LOCALPATH, --localpath LOCALPATH
+  -L PERSISTPATH, --PERSISTPATH PERSISTPATH
                         Local PCAP file directory
   -R REMOTEPATH, --remotepath REMOTEPATH
                         Remote PCAP file directory
@@ -114,8 +126,7 @@ options:
   --log LOG             Debug log filename
 
 "
-echo -e "Installation complete
-"
-
+echo -e "Installation complete"
+echo -e ""
 echo -e "To remove the docker container and associated image, run the following command:"
-echo -e "    sudo /opt/pcapcopier/pcapcopier-uninstaller.sh"
+echo -e "    sudo $PERSISTBASE/pcapcopier-uninstaller.sh"
