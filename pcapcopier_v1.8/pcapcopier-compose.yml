@@ -6,7 +6,7 @@ services:
     environment:
       - MOTD="\\n###########################\\nSilentdefense -- PCAP Copier\\n###########################"
       - OVERRIDE_SERVER_PROPERTIES="true"
-    hostname: pcapcopier_v1.8
+    hostname: pcapcopier_v1-8
     ports:
       - "127.0.0.1:2022:2022"
     volumes:
