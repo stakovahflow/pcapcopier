@@ -5,16 +5,21 @@ if [[ $EUID -ne 0 ]]; then
 fi
 VERSION="pcapcopier_v1.8"
 USERNAME="silentdefense"
-HOMEDIR="/home/${USERNAME}"
+LOCALPATH="/opt/pcapcopier/localstorage/home"
+LOGPATH="/opt/pcapcopier/log"
+CSVPATH="/opt/pcapcopier/csv"
+CUSTOMHOMEDIR="${LOCALPATH}/${USERNAME}"
 SSHDIR="${HOMEDIR}/.ssh"
 SSHPRIVATEKEY="${SSHDIR}/id_ecdsa"
 SSHPUBLICKEY="${SSHDIR}/id_ecdsa.pub"
-AUTHKEYS="${SSHDIR}/authorized_keys"
+AUTHKEYS="${LOCALPATH}/.ssh/authorized_keys"
 TMPAUTHKEYS="/tmp/authorized_keys_${USERNAME}"
 SSHCONFIG='Host 127.0.0.1
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null'
 SSHCONFIGPATH="${SSHDIR}/config"
+
+mkdir -p "$LOCALPATH"
 
 if [ -d "$HOMEDIR" ]; then
   echo "$USERNAME home directory found"
@@ -30,13 +35,13 @@ if [ -f "$SSHPRIVATEKEY" ]; then
 else
   mkdir -p "$SSHDIR"
   chmod 700 "$SSHDIR"
-  chown -R silentdefense:silentdefense "$SSHDIR"
+  chown -R "$USERNAME":"$USERNAME" "$SSHDIR"
   echo -e "An ecdsa key was not found in: $SSHDIR"
   echo -e "Local $USERNAME password: "
   read -s LOCALPASSWD
   echo -e ""
-  echo $LOCALPASSWD | sudo -S -u silentdefense ssh-keygen -t ecdsa -N "" -f "$SSHPRIVATEKEY"
-  if [ -f $SSHPRIVATEKEY ]; then
+  echo "$LOCALPASSWD" | sudo -S -u "$USERNAME" ssh-keygen -t ecdsa -N "" -f "$SSHPRIVATEKEY"
+  if [ -f "$SSHPRIVATEKEY" ]; then
     echo -e "Found id_ecdsa public key"
   else
     echo -e "Unable to create id_ecdsa key. Please run the following command and try performing the installation process again:"
@@ -47,7 +52,7 @@ fi
 
 echo -e "Attempting to copy and deduplicate authorized_keys"
 cat "$SSHPUBLICKEY" >> "$AUTHKEYS"
-cat ${AUTHKEYS} | sort | uniq | grep "[a-z]" > ${TMPAUTHKEYS}; mv ${TMPAUTHKEYS} ${AUTHKEYS}
+# cat ${AUTHKEYS} | sort | uniq | grep "[a-z]" > ${TMPAUTHKEYS}; mv ${TMPAUTHKEYS} ${AUTHKEYS}
 chmod 600 "$AUTHKEYS"
 echo "$SSHCONFIG" > "$SSHCONFIGPATH"
 chown -R silentdefense:silentdefense "$SSHDIR"
@@ -61,9 +66,9 @@ echo -e "Attempting to load pcapcopier docker image:"
 docker load -i "$VERSION.tar"
 echo -e "Done."
 
-echo -e "Creating /opt/pcapcopier directory:"
-mkdir -p /opt/pcapcopier
-echo -e "Done."
+#echo -e "Creating /opt/pcapcopier directory:"
+#mkdir -p /opt/pcapcopier
+#echo -e "Done."
 
 echo -e "Copying pcapcopier-compose.yml to /opt/pcapcopier/"
 cp pcapcopier-compose.yml /opt/pcapcopier/

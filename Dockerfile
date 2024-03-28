@@ -9,6 +9,7 @@ EXPOSE 2022
 ADD entrypoint.sh /
 ADD pcapcopier.py /opt/pcapcopier/bin/pcapcopier.py
 ADD pcapcopier-banner.txt /etc/motd
+RUN echo "pcapcopier_v1-8" > /etc/hostname
 RUN mkdir -p /opt/pcaps
 RUN mkdir -p /var/log/pcapcopier
 RUN mkdir -p /root/.ssh

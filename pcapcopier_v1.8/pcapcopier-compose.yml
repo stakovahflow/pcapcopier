@@ -10,7 +10,7 @@ services:
     ports:
       - "127.0.0.1:2022:2022"
     volumes:
-      - "/home/silentdefense:/home/silentdefense"
+      - "/opt/pcapcopier/localstorage/home/silentdefense:/home/silentdefense"
       - "/var/log/pcapcopier:/var/log/pcapcopier"
       - "/opt/nids-docker/custom/pcaps/sniff_offline/:/opt/nids-docker/custom/pcaps/sniff_offline/"
     restart: unless-stopped
