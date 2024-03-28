@@ -1,6 +1,6 @@
 FROM alpine:latest
 ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache bash sudo git python3 py3-pip openssh curl
+RUN apk add --update --no-cache bash sudo git python3 py3-pip openssh curl screen
 RUN sed -i 's/^Port/#Port/g' /etc/ssh/sshd_config
 RUN echo 'Port 2022' >> /etc/ssh/sshd_config
 RUN echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config

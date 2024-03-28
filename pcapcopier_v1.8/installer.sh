@@ -26,6 +26,7 @@ if [ -f "$SSHPRIVATEKEY" ]; then
 else
   mkdir -p "$SSHDIR"
   chmod 700 "$SSHDIR"
+  chown -R silentdefense:silentdefense "$SSHDIR"
   echo -e "An ecdsa key was not found in: $SSHDIR"
   echo -e "Local $USERNAME password: "
   read -s LOCALPASSWD
@@ -83,13 +84,10 @@ echo -e "#####################################################################
     Container password: 4Scout123
 #####################################################################
 "
-echo -e "To run the pcap copier appliaction, run the following command:"
-echo -e "    sudo /opt/pcapcopier/bin/pcapcopier.py -h 192.168.122.121"
-echo -e "    sudo /opt/pcapcopier/bin/pcapcopier.py --help"
-echo -e "usage: pcapcopier.py [--help] [-l LOCATION] [-c CSV] [-h HOST] [-u USER] [-L LOCALPATH] [-R REMOTEPATH] [--timeout TIMEOUT] [--verbose]
-                     [--log LOG]
-
-Provide Customizations for Forescout eyeInspect PostgreSQL configuration
+echo -e "To run the pcap copier application, run the following command:
+    sudo /opt/pcapcopier/bin/pcapcopier.py -h 192.168.123.111
+    sudo /opt/pcapcopier/bin/pcapcopier.py --help
+    sudo /opt/pcapcopier/bin/pcapcopier.py
 
 options:
   --help                show this help message and exit

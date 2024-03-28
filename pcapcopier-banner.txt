@@ -1,5 +1,15 @@
 
-#############################################
+
+###############################################################
   Silentdefense: PCAP Copier
-#############################################
+###############################################################
+
+To run the pcap copier application, run the following command:
+    sudo /opt/pcapcopier/bin/pcapcopier.py -h 192.168.123.111
+    sudo /opt/pcapcopier/bin/pcapcopier.py --help
+    sudo /opt/pcapcopier/bin/pcapcopier.py
+
+###############################################################
+
+
 
